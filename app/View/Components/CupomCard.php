@@ -6,11 +6,11 @@ use Illuminate\View\Component;
 
 class CupomCard extends Component
 {
-    public $cupons;
+    public $cupom;
 
-    public function __construct($cupons)
+    public function __construct($cupom)
     {
-        $this->cupons = $cupons;
+        $this->cupom = $cupom;
     }
 
     public function render()
