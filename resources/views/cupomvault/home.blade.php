@@ -14,7 +14,7 @@
 
         <div class="menu-home">
             <a href="{{ route('comercio.login') }}" class="btn btn-primary">Acessar como Comércio</a>
-            <a href="{{ url('/cupomvault/associado') }}" class="btn btn-secondary">Acessar como Associado</a>
+            <a href="{{ route('associado.login') }}" class="btn btn-secondary">Acessar como Associado</a>
         </div>
     </div>
 

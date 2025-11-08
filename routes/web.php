@@ -28,6 +28,8 @@ Route::prefix('cupomvault')->group(function () {
 
     Route::prefix('/cupom')->group(function () {
         Route::post('', [CupomController::class, 'create'])->name('cupom.create');
+        Route::post('/deletar', [CupomController::class, 'delete'])->name('cupom.delete');
+        Route::get('/cupom/ativar/{id}', [CupomController::class, 'ativar'])->name('cupom.ativar');
     });
 
 

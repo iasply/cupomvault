@@ -21,9 +21,9 @@
                     <x-cupom-card
                         :cupom="$cupom"
                         :acoes="[
-                    ['label' => 'Editar', 'class' => 'bg-yellow-500 text-white hover:bg-yellow-600', 'onClick' => 'window.location.href=`/cupom/edit/'.$cupom->id_cupom.'`'],
-                    ['label' => 'Excluir', 'class' => 'bg-red-500 text-white hover:bg-red-600', 'onClick' => 'if(confirm(`Excluir este cupom?`)) window.location.href=`/cupom/delete/'.$cupom->id_cupom.'`'],
-                    ['label' => 'Desativar', 'class' => 'bg-gray-300 text-gray-800 hover:bg-gray-400'],
+                    ['label' => 'Editar', 'class' => 'bg-yellow-500 text-white hover:bg-yellow-600', 'onClick' => 'window.location.href=`/cupom/edit/'.$cupom->id_promo.'`'],
+                    ['label' => 'Excluir', 'class' => 'bg-red-500 text-white hover:bg-red-600', 'onClick' => 'if(confirm(`Excluir este cupom?`)) window.location.href=`/cupom/delete/'.$cupom->id_promo.'`']
+//                    ,['label' => 'Desativar', 'class' => 'bg-gray-300 text-gray-800 hover:bg-gray-400'],
                 ]"
                     />
                 @endforeach

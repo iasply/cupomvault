@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Painel do Comércio')</title>
+    <title>@yield('title', 'Painel do Associado')</title>
     @vite('resources/css/app.css') {{-- Tailwind --}}
 </head>
 
@@ -13,10 +13,10 @@
 <aside class="w-64 bg-gray-900 text-white flex flex-col fixed h-full transition-all duration-300">
     <div class="p-5 border-b border-gray-800">
         <h2 class="text-lg font-semibold truncate">
-            {{ session('comercio')->nom_fantasia_comercio ?? 'Comércio' }}
+            {{ session('associado')->nom_associado ?? 'Associado' }}
         </h2>
         <p class="text-sm text-gray-400 truncate">
-            {{ session('comercio')->email_comercio ?? '' }}
+            {{ session('associado')->email_associado ?? '' }}
         </p>
     </div>
 

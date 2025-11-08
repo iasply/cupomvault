@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Cupom extends Model
 {
-public $incrementing = false;
-public $timestamps = false; // chave primária
-    protected $table = 'cupons'; // não é auto-increment
-    protected $primaryKey = 'num_cupom'; // chave primária é string
-protected $keyType = 'string'; // não temos created_at/updated_at
+    public $incrementing = false;
+    public $timestamps = false;
+    protected $table = 'cupons';
+    protected $primaryKey = 'num_cupom';
+    protected $keyType = 'string';
     protected $fillable = [
         'num_cupom',
         'tit_cupom',
@@ -20,6 +20,7 @@ protected $keyType = 'string'; // não temos created_at/updated_at
         'dta_inicio_cupom',
         'dta_termino_cupom',
         'per_desc_cupom',
+        'id_promo',
     ];
 
     protected $dates = [

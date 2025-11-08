@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Comercio extends Model
 {
-public $incrementing = false;
-    protected $table = 'comercios'; // chave primária
-protected $primaryKey = 'cnpj_comercio'; // porque não é auto-increment
-    protected $keyType = 'string'; // a chave é string
+    public $incrementing = false;
+    protected $table = 'comercios';
+    protected $primaryKey = 'cnpj_comercio';
+    protected $keyType = 'string';
 
     protected $fillable = [
         'cnpj_comercio',
@@ -23,6 +23,6 @@ protected $primaryKey = 'cnpj_comercio'; // porque não é auto-increment
         'uf_comercio',
         'con_comercio',
         'email_comercio',
-        'sen_comercio',
+        'sen_comercio'
     ];
 }
