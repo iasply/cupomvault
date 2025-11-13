@@ -6,17 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void
+
     {
+        DB::statement('CREATE EXTENSION IF NOT EXISTS "pgcrypto";');
         Schema::create('cupom_associado', function (Blueprint $table) {
-            $table->integer('id_cupom_associado')->primary();
+            $table->uuid('id_cupom_associado')->primary()->default(DB::raw('gen_random_uuid()'));
             $table->char('num_cupom', 12);
             $table->string('cpf_associado', 20);
             $table->date('dta_cupom_associado');
             $table->date('dta_uso_cupom_associado')->nullable();
-
             $table->foreign('num_cupom')
                 ->references('num_cupom')->on('cupons');
-
             $table->foreign('cpf_associado')
                 ->references('cpf_associado')->on('associados');
         });

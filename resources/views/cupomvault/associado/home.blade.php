@@ -1,12 +1,6 @@
 @extends('layouts.associado')
 
 @section('title', 'Home do Associado')
-@if(session('success'))
-    <div class="alert alert-success">{{ session('success') }}</div>
-@endif
-@if(session('error'))
-    <div class="alert alert-danger">{{ session('error') }}</div>
-@endif
 
 @section('content')
     <div class="max-w-7xl mx-auto px-4 py-10">
@@ -38,14 +32,14 @@
                 <x-cupom-card
                     :cupom="$cupom"
                     :acoes="[
-    [
-        'label' => 'Ativar',
-        'class' => 'bg-green-600 text-white hover:bg-green-700',
-   'onClick' => "window.location.href='{{ route('cupom.ativar', ['id' => $cupom->id_promo]) }}'"
-
-                ]
-]"
+        [
+            'label' => 'Ativar',
+            'class' => 'bg-green-600 text-white hover:bg-green-700',
+            'onClick' => 'window.location.href=\'' . route('cupom.ativar', ['id' => $cupom->id_promo]) . '\''
+        ]
+    ]"
                 />
+
             @empty
                 <p class="text-gray-500 text-center col-span-full py-6">
                     Nenhum cupom encontrado.

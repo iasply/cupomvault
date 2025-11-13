@@ -26,10 +26,10 @@
            class="block py-2 px-3 rounded hover:bg-gray-800 transition {{ request()->routeIs('comercio.home') ? 'bg-gray-800' : '' }}">
             🏠 Início
         </a>
-{{--        <a href="{{ route('associado.cupons') }}"--}}
-{{--           class="block py-2 px-3 rounded hover:bg-gray-800 transition {{ request()->routeIs('comercio.cupons') ? 'bg-gray-800' : '' }}">--}}
-{{--            🎟️ Meus Cupons--}}
-{{--        </a>--}}
+        <a href="{{ route('associado.cupons') }}"
+           class="block py-2 px-3 rounded hover:bg-gray-800 transition {{ request()->routeIs('comercio.cupons') ? 'bg-gray-800' : '' }}">
+            🎟️ Meus Cupons
+        </a>
 {{--        <a href="{{ route('associado.perfil') }}"--}}
 {{--           class="block py-2 px-3 rounded hover:bg-gray-800 transition {{ request()->routeIs('comercio.perfil') ? 'bg-gray-800' : '' }}">--}}
 {{--            👤 Meu Perfil--}}

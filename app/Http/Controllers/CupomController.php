@@ -44,7 +44,6 @@ class CupomController extends Controller
     {
         $comercio = session('comercio');
 
-        // Busca os cupons com nome do comércio
         $query = DB::table('cupons as c')
             ->join('comercios as co', 'co.cnpj_comercio', '=', 'c.cnpj_comercio')
             ->select(
@@ -68,16 +67,13 @@ class CupomController extends Controller
             )
             ->orderBy('c.dta_emissao_cupom', 'desc');
 
-        // Paginação manual para converter em DTOs
         $perPage = 10;
         $page = request('page', 1);
 
         $paginator = $query->paginate($perPage, ['*'], 'page', $page);
 
-        // Converte cada item para DTO
         $dtoCollection = $paginator->getCollection()->map(fn($item) => new CupomDTO($item));
 
-        // Substitui a coleção paginada pelos DTOs
         $cupons = new LengthAwarePaginator(
             $dtoCollection,
             $paginator->total(),
@@ -92,6 +88,9 @@ class CupomController extends Controller
 
     public function listarCuponsHome(Request $request)
     {
+        $associado = session('associado');
+        $cpf = $associado->cpf_associado ?? null;
+
         $perPage = 10;
         $page = $request->input('page', 1);
 
@@ -106,10 +105,11 @@ class CupomController extends Controller
                 'c.id_promo',
                 'c.dta_emissao_cupom'
             )
-            ->whereNotExists(function ($subquery) {
-                $subquery->select(DB::raw(1))
+            ->whereNotIn('c.id_promo', function ($subquery) use ($cpf) {
+                $subquery->select('cp.id_promo')
                     ->from('cupom_associado as ca')
-                    ->whereColumn('ca.num_cupom', 'c.num_cupom');
+                    ->join('cupons as cp', 'cp.num_cupom', '=', 'ca.num_cupom')
+                    ->where('ca.cpf_associado', $cpf);
             });
 
         if ($search = $request->input('search')) {
@@ -127,7 +127,8 @@ class CupomController extends Controller
             'c.per_desc_cupom',
             'c.id_promo',
             'c.dta_emissao_cupom'
-        )->orderBy('c.dta_termino_cupom');
+        )->orderBy('c.dta_termino_cupom', 'asc');
+
 
         $paginator = $query->paginate($perPage, ['*'], 'page', $page);
 
@@ -151,31 +152,37 @@ class CupomController extends Controller
 
         if (!$associado) {
             return redirect()
-                ->route('login')
+                ->route('associado.login')
                 ->with('error', 'Você precisa estar logado para ativar um cupom.');
         }
 
         $sql = "
-        select *
-        from cupons c
-        where c.id_promo = ?
-          and not exists (
-              select 1
-              from cupom_associado ca
-              where ca.num_cupom = c.num_cupom
-                 or ca.cpf_associado = ?
-          )
-        limit 1
-    ";
+                  select 1
+            from cupom_associado ca,
+                 cupons c
+            where 1 = 1
+              and c.id_promo = ?
+              and ca.cpf_associado = ?
+              and c.num_cupom = ca.num_cupom
+                ";
 
-        $cupom = collect(DB::select($sql, [$id, $associado->cpf_associado]))->first();
+        $existe = !empty(DB::select($sql, [$id, $associado->cpf_associado]));
 
-        if (!$cupom) {
+
+        if ($existe) {
             return redirect()
-                ->route('cupomvault.associado.home')
+                ->route('associado.home')
                 ->with('error', 'Nenhum cupom disponível ou já vinculado ao seu CPF.');
         }
 
+        $cupom = Cupom::where('id_promo', $id)
+            ->whereNotExists(function ($sub) use ($associado) {
+                $sub->select(DB::raw(1))
+                    ->from('cupom_associado as ca')
+                    ->whereColumn('ca.num_cupom', 'cupons.num_cupom')
+                    ->where('ca.cpf_associado', $associado->cpf_associado);
+            })
+            ->first();
         CupomAssociado::create([
             'num_cupom' => $cupom->num_cupom,
             'cpf_associado' => $associado->cpf_associado,
@@ -184,7 +191,21 @@ class CupomController extends Controller
         ]);
 
         return redirect()
-            ->route('cupomvault.associado.home')
+            ->route('associado.home')
             ->with('success', 'Cupom ativado com sucesso!');
+    }
+
+
+    public function cuponsUsuario(Request $request){
+        $associado = session('associado');
+
+        if (!$associado) {
+            return redirect()
+                ->route('associado.login')
+                ->with('error', 'Você precisa estar logado para ativar um cupom.');
+        }
+
+
+
     }
 }
