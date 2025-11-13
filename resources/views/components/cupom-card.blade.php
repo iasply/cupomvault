@@ -1,10 +1,35 @@
 @php use Illuminate\Support\Carbon; @endphp
 @props(['cupom', 'acoes' => []])
 
+@php
+    $now = Carbon::today();
+    $status = 'não utilizado';
+    $status_class = 'bg-gray-200 text-gray-800';
+
+    if (!empty($cupom->dta_uso_cupom_associado)) {
+        $status = 'utilizado';
+        $status_class = 'bg-gray-300 text-gray-700';
+    } else if (!empty($cupom->dta_termino_cupom) && Carbon::parse($cupom->dta_termino_cupom)->lt($now)) {
+        $status = 'vencido';
+        $status_class = 'bg-red-100 text-red-700';
+    } else if (!empty($cupom->dta_inicio_cupom) && !empty($cupom->dta_termino_cupom)
+               && Carbon::parse($cupom->dta_inicio_cupom)->lte($now)
+               && Carbon::parse($cupom->dta_termino_cupom)->gte($now)) {
+        $status = 'ativo';
+        $status_class = 'bg-green-100 text-green-700';
+    }
+@endphp
+
 <div class="border border-gray-200 rounded-lg p-5 shadow-sm hover:shadow-md transition bg-white">
-    <h2 class="text-lg font-semibold text-gray-800 mb-3">
-        {{ $cupom->tit_cupom ?? 'Cupom sem título' }}
-    </h2>
+    <div class="flex justify-between items-start mb-3">
+        <h2 class="text-lg font-semibold text-gray-800">
+            {{ $cupom->tit_cupom ?? 'Cupom sem título' }}
+        </h2>
+
+        <span class="px-2 py-1 rounded text-xs font-medium {{ $status_class }}">
+            {{ strtoupper($status) }}
+        </span>
+    </div>
 
     <div class="text-gray-600 text-sm space-y-1 mb-4">
         @if(!empty(@$cupom->nom_fantasia_comercio))
@@ -33,6 +58,13 @@
         @if(!is_null(@$cupom->per_desc_cupom ?? null))
             <p><strong>Desconto:</strong> {{ @$cupom->per_desc_cupom }}%</p>
         @endif
+
+        @if(!empty(@$cupom->bai_comercio) && !empty(@$cupom->uf_comercio) && !empty(@$cupom->end_comercio) && !empty(@$cupom->cep_comercio))
+                <p><strong>Endereço:</strong> {{ @$cupom->end_comercio }}</p>
+                <p><strong>Uf:</strong> {{ @$cupom->uf_comercio }}</p>
+                <p><strong>Bairro:</strong> {{ @$cupom->bai_comercio }}</p>
+                <p><strong>Cep:</strong> {{ @$cupom->cep_comercio }}</p>
+        @endif
     </div>
 
     @if(!empty($acoes))
@@ -46,7 +78,6 @@
                 >
                     {{ $acao['label'] }}
                 </button>
-
             @endforeach
         </div>
     @endif

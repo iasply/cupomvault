@@ -25,6 +25,7 @@ class CupomController extends Controller
         $cnpj = $request->session()->get('comercio')->cnpj_comercio;
 
         for ($i = 0; $i < $request->quantidade; $i++) {
+
             Cupom::create([
                 'num_cupom' => strtoupper(Str::random(12)),
                 'tit_cupom' => $request->tit_cupom,
@@ -196,16 +197,87 @@ class CupomController extends Controller
     }
 
 
-    public function cuponsUsuario(Request $request){
+    public function cuponsUsuario(Request $request)
+    {
         $associado = session('associado');
 
         if (!$associado) {
             return redirect()
                 ->route('associado.login')
-                ->with('error', 'Você precisa estar logado para ativar um cupom.');
+                ->with('error', 'Você precisa estar logado para visualizar seus cupons.');
         }
 
+        $cpf = $associado->cpf_associado;
+        $filtro = $request->get('filtro', 'todos');
+        $busca = $request->get('busca');
+        $page = max((int) $request->get('page', 1), 1);
+        $limit = 10;
+        $offset = ($page - 1) * $limit;
 
+        // SQL principal com sintaxe Oracle compatível
+        $sqlBase = "
+        select
+            c.tit_cupom,
+            c.dta_inicio_cupom,
+            c.dta_termino_cupom,
+            c.per_desc_cupom,
+            c.id_promo,
+            c.num_cupom,
+            cm.nom_fantasia_comercio,
+            cm.bai_comercio,
+            cm.uf_comercio,
+            cm.cep_comercio,
+            cm.end_comercio,
+            ca.dta_uso_cupom_associado
+        from cupons c
+        join comercios cm on cm.cnpj_comercio = c.cnpj_comercio
+        join cupom_associado ca on ca.num_cupom = c.num_cupom
+        where ca.cpf_associado = ?
+           and (
+            case ?
+                when 'utilizado' then (ca.dta_uso_cupom_associado is not null)
+                when 'nao_utilizado' then (ca.dta_uso_cupom_associado is null)
+                when 'vencido' then (c.dta_termino_cupom < current_date)
+                when 'ativo' then (c.dta_inicio_cupom <= current_date and c.dta_termino_cupom >= current_date)
+                else true
+            end
+      )
+    ";
 
+        $bindings = [$cpf, $filtro];
+
+        if (!empty($busca)) {
+            $sqlBase .= " and (lower(c.tit_cupom) like lower(?) or lower(cm.nom_fantasia_comercio) like lower(?)) ";
+            $like = '%' . $busca . '%';
+            $bindings[] = $like;
+            $bindings[] = $like;
+        }
+
+        // Conta total para paginação
+        $sqlCount = "select count(*) as total from (" . $sqlBase . ") t";
+        $total = DB::select($sqlCount, $bindings)[0]->total ?? 0;
+
+        // Paginação com OFFSET / FETCH (Oracle style compatível com PostgreSQL)
+        $sqlPaged = $sqlBase . " order by c.dta_termino_cupom desc offset ? rows fetch next ? rows only";
+        $pagedBindings = array_merge($bindings, [$offset, $limit]);
+
+        $rows = DB::select($sqlPaged, $pagedBindings);
+
+        $dtoCollection = collect($rows)->map(fn($r) => new CupomDTO($r));
+
+        $paginator = new LengthAwarePaginator(
+            $dtoCollection,
+            $total,
+            $limit,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        return view('cupomvault.associado.cupons', [
+            'cupons' => $paginator,
+            'filtro' => $filtro,
+            'busca'  => $busca,
+        ]);
     }
+
 }

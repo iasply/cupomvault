@@ -41,7 +41,7 @@ Route::prefix('cupomvault')->group(function () {
         Route::post('/login', [AssociadoController::class, 'autenticar'])->name('associado.autenticar');
         Route::get('/logout', [AssociadoController::class, 'logout'])->name('associado.logout');
         Route::get('/home', [AssociadoController::class, 'home'])->name('associado.home');
-        Route::get('/cupom', [CupomController::class, 'cupom'])->name('associado.cupom');
+        Route::get('/cupom', [CupomController::class, 'cuponsUsuario'])->name('associado.cupons');
 
     });
 
