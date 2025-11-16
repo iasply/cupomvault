@@ -2,6 +2,38 @@ version: '3.8'
 
 services:
 
+  laravel:
+    build: .
+    container_name: laravel_app
+    environment:
+      LARAVEL_DATABASE_HOST: postgres
+      LARAVEL_DATABASE_PORT_NUMBER: 5432
+      LARAVEL_DATABASE_NAME: cupomvault
+      LARAVEL_DATABASE_USER: root
+      LARAVEL_DATABASE_PASSWORD: root
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: cupomvault
+      DB_USERNAME: root
+      DB_PASSWORD: root
+
+    networks:
+      - laravel
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_app
+    ports:
+      - "8000:80"
+    volumes:
+      - ./public:/var/www/html/public
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - laravel
+    networks:
+      - laravel
+
   postgres:
     image: postgres:latest
     container_name: postgres_db
@@ -11,9 +43,7 @@ services:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
     volumes:
-      - pgdata:/var/lib/postgresql
-    ports:
-      - "5432:5432"
+      - pgdata:/var/lib/postgresql/
     networks:
       - laravel
 
