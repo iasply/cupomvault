@@ -3,29 +3,63 @@
 @section('title', 'Login do Associado')
 
 @section('content')
-    <h2>Login do Associado</h2>
+    <x-container>
 
-    @if(session('error'))
-        <div class="alert error">{{ session('error') }}</div>
-    @endif
+        <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">
+            Login do Associado
+        </h2>
 
-    @if(session('success'))
-        <div class="alert success">{{ session('success') }}</div>
-    @endif
+        @if(session('error'))
+            <div class="alert error">{{ session('error') }}</div>
+        @endif
 
-    <form method="POST" action="{{ route('associado.autenticar') }}">
-        @csrf
+        @if(session('success'))
+            <div class="alert success">{{ session('success') }}</div>
+        @endif
 
-        <label for="email_associado">E-mail</label>
-        <input type="email" id="email_associado" name="email_associado" required>
+        <form method="POST" action="{{ route('associado.autenticar') }}" class="space-y-5">
+            @csrf
 
-        <label for="sen_associado">Senha</label>
-        <input type="password" id="sen_associado" name="sen_associado" required>
+            {{-- E-mail --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    E-mail
+                </label>
+                <x-input
+                    type="email"
+                    name="email_associado"
+                    required
+                />
+            </div>
 
-        <button type="submit">Entrar</button>
-    </form>
+            {{-- Senha --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Senha
+                </label>
+                <x-input
+                    type="password"
+                    name="sen_associado"
+                    required
+                />
+            </div>
 
-    <p style="text-align:center; margin-top: 15px;">
-        <a href="{{ route('associado.create') }}">Cadastrar novo Associado</a>
-    </p>
+            {{-- Botão --}}
+            <button
+                type="submit"
+                class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
+            >
+                Entrar
+            </button>
+        </form>
+
+        <p class="text-center mt-4">
+            <a href="{{ route('associado.create') }}" class="text-blue-600 hover:underline">
+                Cadastrar novo Associado
+            </a>
+        </p>
+
+
+        </x-container>
+
 @endsection

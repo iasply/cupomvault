@@ -12,7 +12,7 @@ class ComercioController extends Controller
     {
         $validated = $request->validate([
             'cnpj_comercio' => 'required|numeric|digits:14|unique:comercios,cnpj_comercio',
-            'id_categoria' => 'nullable|exists:categorias,id_categoria',
+            'id_categoria' => 'required|exists:categorias,id_categoria',
             'raz_social_comercio' => 'required|string|max:50',
             'nom_fantasia_comercio' => 'required|string|max:30',
             'end_comercio' => 'required|string|max:40',
@@ -23,9 +23,8 @@ class ComercioController extends Controller
             'con_comercio' => 'required|string|max:15',
             'email_comercio' => 'required|email|max:50|unique:comercios,email_comercio',
             'sen_comercio' => 'required|string|min:6|max:64',
-        ]);
+            ]);
 
-        // Criptografa a senha
         $validated['sen_comercio'] = bcrypt($validated['sen_comercio']);
 
         Comercio::create($validated);

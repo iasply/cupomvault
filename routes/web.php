@@ -9,7 +9,6 @@ Route::get('/', function () {
     return view('index');
 });
 
-
 Route::prefix('cupomvault')->group(function () {
 
     Route::get('/home', fn() => view('cupomvault.home'))->name('cupomvault.home');
@@ -23,6 +22,8 @@ Route::prefix('cupomvault')->group(function () {
         Route::get('/perfil', [ComercioController::class, 'perfil'])->name('comercio.perfil');
         Route::prefix('/cupom')->group(function () {
             Route::get('/listar', [CupomController::class, 'listarCuponsComercio'])->name('comercio.cupons');
+            Route::get('/usar', [CupomController::class, 'usar'])->name('comercio.usar');
+            Route::post('/usar', [CupomController::class, 'confirmarUso'])->name('comercio.usar');
         });
     });
 
@@ -42,6 +43,8 @@ Route::prefix('cupomvault')->group(function () {
         Route::get('/logout', [AssociadoController::class, 'logout'])->name('associado.logout');
         Route::get('/home', [AssociadoController::class, 'home'])->name('associado.home');
         Route::get('/cupom', [CupomController::class, 'cuponsUsuario'])->name('associado.cupons');
+        Route::get('/perfil', [AssociadoController::class, 'perfil'])->name('associado.perfil');
+
 
     });
 

@@ -1,9 +1,12 @@
+@php
+    use App\Enums\CategoriaComercio;
+@endphp
 @extends('layouts.comercio')
 
 @section('title', 'Meu Perfil')
 
 @section('content')
-    <div class="max-w-3xl mx-auto mt-10 bg-white shadow-md rounded-xl p-8">
+    <x-container>
         <h1 class="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">
             👤 Meu Perfil
         </h1>
@@ -56,6 +59,13 @@
                     {{ $comercio->created_at ? $comercio->created_at->format('d/m/Y') : '—' }}
                 </div>
             </div>
+
+            <div>
+                <label class="block text-sm text-gray-500">Tipo de Comércio</label>
+                <div class="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-1">
+                    {{ $comercio->id_categoria?->label() ?? '—' }}
+                </div>
+            </div>
         </div>
 
         {{-- Botões --}}
@@ -66,5 +76,5 @@
                 ✏️ Editar Perfil
             </button>
         </div>
-    </div>
+    </x-container>
 @endsection

@@ -3,7 +3,7 @@
 @section('title', 'Meus Cupons')
 
 @section('content')
-    <div class="max-w-4xl mx-auto mt-10 bg-white shadow-md rounded-xl p-8">
+    <x-container>
         <h1 class="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">
             🧾 Meus Cupons
         </h1>
@@ -11,6 +11,12 @@
         <p class="text-gray-600 mb-8">
             Aqui estão todos os cupons cadastrados para o seu comércio.
         </p>
+
+        <x-filtro-busca
+            :action="route('comercio.cupons')"
+            method="GET"
+        />
+
 
         <!-- Componente de cupons -->
         @if($cupons->isEmpty())
@@ -37,14 +43,14 @@
         @endif
 
 
-
         <div class="flex justify-end mt-8">
             <button id="openModal"
                     class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white transition">
                 ➕ Novo Cupom
             </button>
         </div>
-    </div>
+
+    </x-container>
 
     <!-- Modal de criação de cupons -->
     <div id="modal" class="fixed inset-0 flex items-center justify-center hidden">
@@ -58,11 +64,12 @@
             <form action="{{ route('cupom.create') }}" method="POST" class="space-y-5">
                 @csrf
 
-                <x-input label="Título do Cupom" name="tit_cupom" maxlength="25" required />
-                <x-input label="Quantidade de Cupons" name="quantidade" type="number" min="1" max="100" required />
-                <x-input label="Data de Início" name="dta_inicio_cupom" type="date" required />
-                <x-input label="Data de Validade" name="dta_termino_cupom" type="date" required />
-                <x-input label="Porcentagem de Desconto (%)" name="per_desconto" type="number" min="1" max="100" required />
+                <x-input label="Título do Cupom" name="tit_cupom" maxlength="25" required/>
+                <x-input label="Quantidade de Cupons" name="quantidade" type="number" min="1" max="100" required/>
+                <x-input label="Data de Início" name="dta_inicio_cupom" type="date" required/>
+                <x-input label="Data de Validade" name="dta_termino_cupom" type="date" required/>
+                <x-input label="Porcentagem de Desconto (%)" name="per_desconto" type="number" min="1" max="100"
+                         required/>
 
                 <div class="flex justify-end gap-2 pt-4">
                     <button

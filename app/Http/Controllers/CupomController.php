@@ -210,7 +210,7 @@ class CupomController extends Controller
         $cpf = $associado->cpf_associado;
         $filtro = $request->get('filtro', 'todos');
         $busca = $request->get('busca');
-        $page = max((int) $request->get('page', 1), 1);
+        $page = max((int)$request->get('page', 1), 1);
         $limit = 10;
         $offset = ($page - 1) * $limit;
 
@@ -253,11 +253,9 @@ class CupomController extends Controller
             $bindings[] = $like;
         }
 
-        // Conta total para paginação
         $sqlCount = "select count(*) as total from (" . $sqlBase . ") t";
         $total = DB::select($sqlCount, $bindings)[0]->total ?? 0;
 
-        // Paginação com OFFSET / FETCH (Oracle style compatível com PostgreSQL)
         $sqlPaged = $sqlBase . " order by c.dta_termino_cupom desc offset ? rows fetch next ? rows only";
         $pagedBindings = array_merge($bindings, [$offset, $limit]);
 
@@ -276,8 +274,50 @@ class CupomController extends Controller
         return view('cupomvault.associado.cupons', [
             'cupons' => $paginator,
             'filtro' => $filtro,
-            'busca'  => $busca,
+            'busca' => $busca,
         ]);
     }
+
+    public function usar()
+    {
+        return view('cupomvault.comercio.usar');
+    }
+
+    public function confirmarUso(Request $request)
+    {
+        $comercio = session('comercio');
+
+        if (!$comercio) {
+            return back()->with('error', 'Nenhum comércio logado.');
+        }
+
+        $request->validate([
+            'cpf' => 'required',
+            'num_cupom' => 'required'
+        ]);
+
+        $cnpjComercio = $comercio->cnpj_comercio;
+        $cpfAssociado = $request->cpf;
+        $numeroCupom = $request->num_cupom;
+
+        $registro = DB::table('cupom_associado as ca')
+            ->join('cupons as c', 'ca.num_cupom', '=', 'c.num_cupom')
+            ->join('comercios as co', 'co.cnpj_comercio', '=', 'c.cnpj_comercio')
+            ->where('co.cnpj_comercio', $cnpjComercio)
+            ->where('ca.num_cupom', $numeroCupom)
+            ->where('ca.cpf_associado', $cpfAssociado)
+            ->whereNull('ca.dta_uso_cupom_associado')
+            ->first();
+
+        if (!$registro) {
+            return back()->with('error', 'Cupom inválido, não pertence a este comércio ou já foi usado.');
+        }
+
+        CupomAssociado::where('id_cupom_associado', $registro->id_cupom_associado)
+            ->update(['dta_uso_cupom_associado' => now()]);
+
+        return back()->with('success', 'Cupom ativado com sucesso!');
+    }
+
 
 }

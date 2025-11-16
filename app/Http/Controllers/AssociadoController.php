@@ -76,4 +76,15 @@ class AssociadoController extends Controller
         return view('cupomvault.associado.home', compact('cupons'));
     }
 
+    public function perfil(Request $request)
+    {
+        $associado = $request->session()->get('associado');
+
+        if (!$associado) {
+            return redirect()->route('associado.login')->with('error', 'Faça login primeiro.');
+        }
+
+        return view('cupomvault.associado.perfil', compact('associado'));
+    }
+
 }

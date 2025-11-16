@@ -5,193 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'CupomVault')</title>
 
-    <style>
-        /* ====== ESTILO GLOBAL ====== */
-        :root {
-            --primary-color: #007bff;
-            --secondary-color: #6c757d;
-            --bg-color: #f4f6f8;
-            --text-color: #333;
-            --radius: 10px;
-        }
-
-        * {
-            box-sizing: border-box;
-            font-family: "Poppins", Arial, sans-serif;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            width: 100%;
-            box-sizing: border-box; /* garante que padding e border não aumentem a largura */
-            overflow-x: hidden; /* remove qualquer scroll horizontal */
-        }
-
-        *, *::before, *::after {
-            box-sizing: inherit;
-        }
-
-        /* ====== CABEÇALHO ====== */
-        header {
-            background: var(--primary-color);
-            color: #fff;
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        header h1 {
-            font-size: 1.5rem;
-            margin: 0;
-            letter-spacing: 1px;
-        }
-
-        nav a {
-            color: #fff;
-            margin-left: 20px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: opacity 0.2s ease;
-        }
-
-        nav a:hover {
-            opacity: 0.8;
-        }
-
-        /* ====== CONTEÚDO ====== */
-        main {
-            flex: 1;
-            width: 100%;
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 30px;
-            background: #fff;
-            border-radius: var(--radius);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        h2 {
-            text-align: center;
-            color: var(--primary-color);
-            margin-bottom: 25px;
-        }
-
-        /* ====== ALERTAS ====== */
-        .alert {
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .alert.success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .alert.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        /* ====== FORMULÁRIOS ====== */
-        form label {
-            display: block;
-            font-weight: 600;
-            margin-top: 15px;
-            color: #444;
-        }
-
-        form input, form select {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            transition: border-color 0.2s ease;
-        }
-
-        form input:focus {
-            border-color: var(--primary-color);
-            outline: none;
-        }
-
-        button {
-            background-color: var(--primary-color);
-            color: #fff;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            margin-top: 20px;
-            transition: background-color 0.3s;
-            width: 100%;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        /* ====== RODAPÉ ====== */
-        footer {
-            text-align: center;
-            padding: 15px;
-            background: #fff;
-            border-top: 1px solid #ddd;
-            font-size: 0.9rem;
-            color: #666;
-            width: 100%;
-        }
-
-        @media (max-width: 600px) {
-            main {
-                margin: 20px;
-                padding: 20px;
-            }
-
-            header {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            nav {
-                margin-top: 10px;
-            }
-        }
-    </style>
+    @vite('resources/css/app.css')
 </head>
-<body>
 
-<header>
-    <h1>CupomVault</h1>
-    <nav>
-        <a href="{{ route('cupomvault.home') }}">Início</a>
-        <a href="{{ route('comercio.login') }}">Comércios</a>
-        <a href="{{ route('associado.login') }}">Associados</a>
+<body class="bg-gray-100 text-gray-900 flex flex-col min-h-screen">
+
+<header class="bg-white border-b border-gray-200 py-4 px-8 flex justify-between items-center shadow-sm">
+    <h1 class="text-xl font-semibold text-gray-800 tracking-wide">
+        CupomVault
+    </h1>
+
+    <nav class="flex gap-6 text-gray-700 font-medium">
+        <a href="{{ route('cupomvault.home') }}"
+           class="hover:text-gray-900 transition">Início</a>
+
+        <a href="{{ route('comercio.login') }}"
+           class="hover:text-gray-900 transition">Comércios</a>
+
+        <a href="{{ route('associado.login') }}"
+           class="hover:text-gray-900 transition">Associados</a>
     </nav>
 </header>
 
-<main>
+<main class="flex-1 w-full max-w-3xl mx-auto mt-10 mb-10 ">
+
+    @if(session('success'))
+        <div class="bg-green-100 border border-green-300 text-green-800 px-4 py-3 rounded mb-6">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="bg-red-100 border border-red-300 text-red-800 px-4 py-3 rounded mb-6">
+            {{ session('error') }}
+        </div>
+    @endif
+
     @yield('content')
 </main>
 
-<footer>
+<footer class="text-center py-4 text-gray-600 text-sm bg-white border-t border-gray-200">
     &copy; {{ date('Y') }} CupomVault — Todos os direitos reservados.
 </footer>
 

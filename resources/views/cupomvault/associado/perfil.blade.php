@@ -9,53 +9,77 @@
         </h1>
 
         <p class="text-gray-600 mb-8">
-            Aqui estão as informações cadastradas do seu comércio.
-            Você pode revisar seus dados para garantir que estão corretos.
+            Aqui estão as informações cadastradas na sua conta de associado.
+            Revise seus dados sempre que necessário.
         </p>
 
         {{-- Informações principais --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
             <div>
-                <label class="block text-sm text-gray-500">Razão Social</label>
+                <label class="block text-sm text-gray-500">Nome Completo</label>
                 <div class="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-1">
-                    {{ $comercio->raz_social_comercio ?? '—' }}
+                    {{ $associado->nom_associado ?? '—' }}
                 </div>
             </div>
 
             <div>
-                <label class="block text-sm text-gray-500">Nome Fantasia</label>
+                <label class="block text-sm text-gray-500">CPF</label>
                 <div class="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-1">
-                    {{ $comercio->nom_fantasia_comercio ?? '—' }}
+                    {{ $associado->cpf_associado ?? '—' }}
                 </div>
             </div>
 
             <div>
                 <label class="block text-sm text-gray-500">E-mail</label>
                 <div class="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-1">
-                    {{ $comercio->email_comercio ?? '—' }}
+                    {{ $associado->email_associado ?? '—' }}
                 </div>
             </div>
 
             <div>
-                <label class="block text-sm text-gray-500">CNPJ</label>
+                <label class="block text-sm text-gray-500">Celular</label>
                 <div class="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-1">
-                    {{ $comercio->cnpj_comercio ?? '—' }}
+                    {{ $associado->cel_associado ?? '—' }}
+                </div>
+            </div>
+
+            <div class="md:col-span-2">
+                <label class="block text-sm text-gray-500">Endereço</label>
+                <div class="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-1">
+                    {{ $associado->end_associado ?? '—' }}
                 </div>
             </div>
 
             <div>
-                <label class="block text-sm text-gray-500">Telefone / Contato</label>
+                <label class="block text-sm text-gray-500">Bairro</label>
                 <div class="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-1">
-                    {{ $comercio->con_comercio ?? '—' }}
+                    {{ $associado->bai_associado ?? '—' }}
                 </div>
             </div>
 
             <div>
-                <label class="block text-sm text-gray-500">Data de Cadastro</label>
+                <label class="block text-sm text-gray-500">Cidade</label>
                 <div class="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-1">
-                    {{ $comercio->created_at ? $comercio->created_at->format('d/m/Y') : '—' }}
+                    {{ $associado->cid_associado ?? '—' }}
                 </div>
             </div>
+
+            <div>
+                <label class="block text-sm text-gray-500">UF</label>
+                <div class="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-1">
+                    {{ $associado->uf_associado ?? '—' }}
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm text-gray-500">CEP</label>
+                <div class="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-1">
+                    {{ $associado->cep_associado ?? '—' }}
+                </div>
+            </div>
+
+
         </div>
 
         {{-- Botões --}}

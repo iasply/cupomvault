@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\CategoriaComercio;
 use Illuminate\Database\Eloquent\Model;
 
 class Comercio extends Model
@@ -25,4 +26,8 @@ class Comercio extends Model
         'email_comercio',
         'sen_comercio'
     ];
+    protected $casts = [
+        'id_categoria' => CategoriaComercio::class,
+    ];
+
 }

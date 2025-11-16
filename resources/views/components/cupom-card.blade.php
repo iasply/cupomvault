@@ -32,6 +32,9 @@
     </div>
 
     <div class="text-gray-600 text-sm space-y-1 mb-4">
+        @if(!empty(@$cupom->num_cupom))
+            <p><strong>Numero do cupom: {{ @$cupom->num_cupom }}</strong></p>
+        @endif
         @if(!empty(@$cupom->nom_fantasia_comercio))
             <p><strong>Comércio:</strong> {{ @$cupom->nom_fantasia_comercio }}</p>
         @endif
@@ -60,10 +63,10 @@
         @endif
 
         @if(!empty(@$cupom->bai_comercio) && !empty(@$cupom->uf_comercio) && !empty(@$cupom->end_comercio) && !empty(@$cupom->cep_comercio))
-                <p><strong>Endereço:</strong> {{ @$cupom->end_comercio }}</p>
-                <p><strong>Uf:</strong> {{ @$cupom->uf_comercio }}</p>
-                <p><strong>Bairro:</strong> {{ @$cupom->bai_comercio }}</p>
-                <p><strong>Cep:</strong> {{ @$cupom->cep_comercio }}</p>
+            <p><strong>Endereço:</strong> {{ @$cupom->end_comercio }}</p>
+            <p><strong>Uf:</strong> {{ @$cupom->uf_comercio }}</p>
+            <p><strong>Bairro:</strong> {{ @$cupom->bai_comercio }}</p>
+            <p><strong>Cep:</strong> {{ @$cupom->cep_comercio }}</p>
         @endif
     </div>
 
