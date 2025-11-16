@@ -15,8 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Cookie\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
-            \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class
-
+            \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+            \App\Http\Middleware\CheckAssociado::class,
+            \App\Http\Middleware\CheckComercio::class
         ];
     })
     ->withExceptions(function (Exceptions $exceptions): void {
