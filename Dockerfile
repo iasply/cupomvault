@@ -23,10 +23,17 @@ COPY .env.production /var/www/html/.env
 # Ajustar permissões
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Build PHP + JS/CSS
-RUN composer install --no-dev --optimize-autoloader \
-    && npm install --production \
-    && npm run build
+# Instalar dependências PHP e build de assets
+RUN composer install --no-dev --optimize-autoloader
+
+# Instalar todas as dependências npm (para build do Vite)
+RUN npm install
+
+# Instalar Vite globalmente (garante que o build funcione)
+RUN npm install -g vite
+
+# Build de assets
+RUN npx vite build
 
 EXPOSE 9000
 CMD ["php-fpm"]
