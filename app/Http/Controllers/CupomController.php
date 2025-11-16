@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DTO\CupomDTO;
 use App\Models\Cupom;
 use App\Models\CupomAssociado;
+use App\View\PaginatorSearchRawSQL;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -41,47 +42,38 @@ class CupomController extends Controller
         return redirect()->route('comercio.cupons')->with('success', 'Cupons criados com sucesso!');
     }
 
-    public function listarCuponsComercio()
+    public function listarCuponsComercio(Request $request)
     {
         $comercio = session('comercio');
+        $bindings = ['cnpj' => $comercio->cnpj_comercio];
 
-        $query = DB::table('cupons as c')
-            ->join('comercios as co', 'co.cnpj_comercio', '=', 'c.cnpj_comercio')
-            ->select(
-                'c.tit_cupom',
-                'c.per_desc_cupom',
-                'c.dta_inicio_cupom',
-                'c.dta_termino_cupom',
-                'c.dta_emissao_cupom',
-                'c.id_promo',
-                'co.nom_fantasia_comercio'
-            )
-            ->where('c.cnpj_comercio', $comercio->cnpj_comercio)
-            ->groupBy(
-                'c.tit_cupom',
-                'c.per_desc_cupom',
-                'c.dta_inicio_cupom',
-                'c.dta_termino_cupom',
-                'c.dta_emissao_cupom',
-                'c.id_promo',
-                'co.nom_fantasia_comercio'
-            )
-            ->orderBy('c.dta_emissao_cupom', 'desc');
+        $sql = "
+        select
+            c.tit_cupom,
+            c.per_desc_cupom,
+            c.dta_inicio_cupom,
+            c.dta_termino_cupom,
+            c.dta_emissao_cupom,
+            c.id_promo,
+            cm.nom_fantasia_comercio
+        from cupons c
+        join comercios cm on cm.cnpj_comercio = c.cnpj_comercio
+        where c.cnpj_comercio = :cnpj
+    ";
 
-        $perPage = 10;
-        $page = request('page', 1);
+        $paginatorRaw = new PaginatorSearchRawSQL($sql, " group by
+          c.tit_cupom,
+            c.per_desc_cupom,
+            c.dta_inicio_cupom,
+            c.dta_termino_cupom,
+            c.dta_emissao_cupom,
+            c.id_promo,
+            cm.nom_fantasia_comercio
+            order by c.dta_emissao_cupom desc ", $bindings, $request);
+        $rows = collect($paginatorRaw->execute())
+            ->map(fn($r) => new CupomDTO($r));
 
-        $paginator = $query->paginate($perPage, ['*'], 'page', $page);
-
-        $dtoCollection = $paginator->getCollection()->map(fn($item) => new CupomDTO($item));
-
-        $cupons = new LengthAwarePaginator(
-            $dtoCollection,
-            $paginator->total(),
-            $paginator->perPage(),
-            $paginator->currentPage(),
-            ['path' => request()->url(), 'query' => request()->query()]
-        );
+        $cupons = $paginatorRaw->getPaginator($rows);
 
         return view('cupomvault.comercio.cupons', compact('cupons'));
     }
@@ -92,58 +84,41 @@ class CupomController extends Controller
         $associado = session('associado');
         $cpf = $associado->cpf_associado ?? null;
 
-        $perPage = 10;
-        $page = $request->input('page', 1);
+        $bindings = ['cpf' => $cpf];
 
-        $query = DB::table('cupons as c')
-            ->join('comercios as com', 'com.cnpj_comercio', '=', 'c.cnpj_comercio')
-            ->select(
-                'c.tit_cupom',
-                'c.dta_inicio_cupom',
-                'c.dta_termino_cupom',
-                'com.nom_fantasia_comercio',
-                'c.per_desc_cupom',
-                'c.id_promo',
-                'c.dta_emissao_cupom'
-            )
-            ->whereNotIn('c.id_promo', function ($subquery) use ($cpf) {
-                $subquery->select('cp.id_promo')
-                    ->from('cupom_associado as ca')
-                    ->join('cupons as cp', 'cp.num_cupom', '=', 'ca.num_cupom')
-                    ->where('ca.cpf_associado', $cpf);
-            });
-
-        if ($search = $request->input('search')) {
-            $query->where(function ($q) use ($search) {
-                $q->where('c.tit_cupom', 'ilike', "%{$search}%")
-                    ->orWhere('com.nom_fantasia_comercio', 'ilike', "%{$search}%");
-            });
-        }
-
-        $query->groupBy(
-            'c.tit_cupom',
-            'c.dta_inicio_cupom',
-            'c.dta_termino_cupom',
-            'com.nom_fantasia_comercio',
-            'c.per_desc_cupom',
-            'c.id_promo',
-            'c.dta_emissao_cupom'
-        )->orderBy('c.dta_termino_cupom', 'asc');
+        $sql = "
+        select
+            c.tit_cupom,
+            c.dta_inicio_cupom,
+            c.dta_termino_cupom,
+            c.per_desc_cupom,
+            c.id_promo,
+            cm.nom_fantasia_comercio,
+            c.dta_emissao_cupom
+        from cupons c
+        join comercios cm on cm.cnpj_comercio = c.cnpj_comercio
+        where c.id_promo not in (
+            select cp.id_promo
+            from cupom_associado ca
+            join cupons cp on cp.num_cupom = ca.num_cupom
+            where ca.cpf_associado = :cpf
+        )
+    ";
 
 
-        $paginator = $query->paginate($perPage, ['*'], 'page', $page);
+        $paginatorRaw = new PaginatorSearchRawSQL($sql, " group by
+            c.tit_cupom,
+            c.dta_inicio_cupom,
+            c.dta_termino_cupom,
+            c.per_desc_cupom,
+            c.id_promo,
+            cm.nom_fantasia_comercio,
+            c.dta_emissao_cupom
+            order by c.dta_termino_cupom asc ", $bindings, $request);
+        $rows = collect($paginatorRaw->execute())
+            ->map(fn($r) => new CupomDTO($r));
 
-        $dtoCollection = $paginator->getCollection()->map(fn($item) => new CupomDTO($item));
-
-        $cupons = new LengthAwarePaginator(
-            $dtoCollection,
-            $paginator->total(),
-            $paginator->perPage(),
-            $paginator->currentPage(),
-            ['path' => $request->url(), 'query' => $request->query()]
-        );
-
-        return $cupons;
+        return $paginatorRaw->getPaginator($rows);
     }
 
 
@@ -208,13 +183,7 @@ class CupomController extends Controller
         }
 
         $cpf = $associado->cpf_associado;
-        $filtro = $request->get('filtro', 'todos');
-        $busca = $request->get('busca');
-        $page = max((int)$request->get('page', 1), 1);
-        $limit = 10;
-        $offset = ($page - 1) * $limit;
 
-        // SQL principal com sintaxe Oracle compatível
         $sqlBase = "
         select
             c.tit_cupom,
@@ -232,51 +201,24 @@ class CupomController extends Controller
         from cupons c
         join comercios cm on cm.cnpj_comercio = c.cnpj_comercio
         join cupom_associado ca on ca.num_cupom = c.num_cupom
-        where ca.cpf_associado = ?
-           and (
-            case ?
-                when 'utilizado' then (ca.dta_uso_cupom_associado is not null)
-                when 'nao_utilizado' then (ca.dta_uso_cupom_associado is null)
-                when 'vencido' then (c.dta_termino_cupom < current_date)
-                when 'ativo' then (c.dta_inicio_cupom <= current_date and c.dta_termino_cupom >= current_date)
-                else true
-            end
-      )
+        where ca.cpf_associado = :cpf
     ";
 
-        $bindings = [$cpf, $filtro];
+        $bindings = ['cpf' => $cpf];
 
-        if (!empty($busca)) {
-            $sqlBase .= " and (lower(c.tit_cupom) like lower(?) or lower(cm.nom_fantasia_comercio) like lower(?)) ";
-            $like = '%' . $busca . '%';
-            $bindings[] = $like;
-            $bindings[] = $like;
-        }
+        $paginatorRaw = new PaginatorSearchRawSQL($sqlBase," order by c.dta_termino_cupom desc ",$bindings, $request);
 
-        $sqlCount = "select count(*) as total from (" . $sqlBase . ") t";
-        $total = DB::select($sqlCount, $bindings)[0]->total ?? 0;
+        $rows = collect($paginatorRaw->execute())
+            ->map(fn($r) => new CupomDTO($r));
 
-        $sqlPaged = $sqlBase . " order by c.dta_termino_cupom desc offset ? rows fetch next ? rows only";
-        $pagedBindings = array_merge($bindings, [$offset, $limit]);
-
-        $rows = DB::select($sqlPaged, $pagedBindings);
-
-        $dtoCollection = collect($rows)->map(fn($r) => new CupomDTO($r));
-
-        $paginator = new LengthAwarePaginator(
-            $dtoCollection,
-            $total,
-            $limit,
-            $page,
-            ['path' => $request->url(), 'query' => $request->query()]
-        );
+        $paginator = $paginatorRaw->getPaginator($rows);
 
         return view('cupomvault.associado.cupons', [
             'cupons' => $paginator,
-            'filtro' => $filtro,
-            'busca' => $busca,
         ]);
+
     }
+
 
     public function usar()
     {

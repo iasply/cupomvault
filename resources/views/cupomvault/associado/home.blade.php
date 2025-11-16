@@ -1,3 +1,10 @@
+@php
+    use App\Enums\CategoriaComercio;
+
+    $tipoComercios = collect(CategoriaComercio::cases())
+        ->mapWithKeys(fn($c) => [$c->value => $c->label()]);
+@endphp
+
 @extends('layouts.associado')
 
 @section('title', 'Home do Associado')
@@ -15,6 +22,11 @@
         <x-filtro-busca
             :action="route('associado.home')"
             method="GET"
+            :filtros="[[
+            'label' => 'Categoria',
+            'name' => 'comercio',
+            'options' => $tipoComercios
+        ]]"
         />
 
         <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -28,6 +40,7 @@
                             'onClick' => 'window.location.href=\''.route('cupom.ativar', ['id' => $cupom->id_promo]).'\''
                         ]
                     ]"
+                    :showStatus="false"
                 />
             @empty
                 <p class="col-span-full py-6 text-center text-gray-500">

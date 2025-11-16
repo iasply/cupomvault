@@ -5,6 +5,7 @@ namespace App\View;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 
 class PaginatorSearchRawSQL
 {
@@ -13,12 +14,13 @@ class PaginatorSearchRawSQL
     private ?string $busca;
     private array $bindings;
     private string $rawSql;
-    private $status;
+    private ?string $status;
     private Request $request;
     private int $total;
-    private string $groupAndOrder;
+    private ?string $groupAndOrder;
+    private ?int $comercio;
 
-    public function __construct(string $rawSql, string $groupAndOrder, array $bindings, Request $request)
+    public function __construct(string $rawSql, ?string $groupAndOrder, array $bindings, Request $request)
     {
         $this->request = $request;
         $this->rawSql = $rawSql;
@@ -26,6 +28,8 @@ class PaginatorSearchRawSQL
         $this->page = max((int)$request->get('page', 1), 1);
         $this->busca = $request->get('busca');
         $this->status = $request->get('status');
+        $this->comercio = $request->get('comercio');
+
         $this->groupAndOrder = $groupAndOrder;
     }
 
@@ -36,28 +40,32 @@ class PaginatorSearchRawSQL
 
     private function getStatusRaw(): string
     {
-        return "
-            and (
-             case ?
-                 when 'utilizado' then (ca.dta_uso_cupom_associado is not null)
-                when 'nao_utilizado' then (ca.dta_uso_cupom_associado is null)
-                when 'vencido' then (c.dta_termino_cupom < current_date)
-                when 'ativo' then (c.dta_inicio_cupom <= current_date and c.dta_termino_cupom >= current_date)
-                else true
-             end
-            )
-        ";
+        $statusRaw = "";
+        switch ($this->status) {
+            case 'utilizado':
+                $statusRaw  .= " and ca.dta_uso_cupom_associado is not null ";
+                break;
+            case 'nao_utilizado':
+                $statusRaw  .= " and ca.dta_uso_cupom_associado is null ";
+                break;
+            case 'vencido':
+                $statusRaw  .= " and c.dta_termino_cupom < current_date ";
+                break;
+            case 'ativo':
+                $statusRaw  .= " and c.dta_inicio_cupom <= current_date and c.dta_termino_cupom >= current_date ";
+                break;
+        }
+
+        return $statusRaw;
     }
 
     private function getBuscaRaw(): string
     {
-        return "
-            and (
-                :busca is null
-                or lower(c.tit_cupom) like lower(concat('%', :busca, '%'))
-                or lower(cm.nom_fantasia_comercio) like lower(concat('%', :busca, '%'))
-            )
-        ";
+        $buscaRaw = "";
+        if (!empty($this->busca)) {
+            $buscaRaw .= " and (lower(c.tit_cupom) like lower(:busca) or lower(cm.nom_fantasia_comercio) like lower(:busca)) ";
+        }
+        return $buscaRaw;
     }
 
     private function getPaginatedRaw(): string
@@ -73,6 +81,7 @@ class PaginatorSearchRawSQL
                     {$this->rawSql}
                     {$this->getStatusRaw()}
                     {$this->getBuscaRaw()}
+                    {$this->getComercioRaw()}
                     {$groupAndOrder}
                     ) t
             ) sub
@@ -80,26 +89,29 @@ class PaginatorSearchRawSQL
         ";
     }
 
-    public function execute(): array
+    public function execute(): Collection
     {
+        if (!empty($this->busca)) {
+            $this->bindings['busca'] = "%{$this->busca}%";
+        }
+        if (!empty($this->comercio)) {
+            $this->bindings['comercio'] = $this->comercio;
+        }
         $bindings = array_merge(
             $this->bindings,
             [
-                'busca' => $this->busca,
-                'status' => $this->status,
                 'offset' => $this->getOffset(),
                 'limit' => $this->pageLimit
             ]
         );
-
-        $results = DB::select($this->getPaginatedRaw(), $bindings);
-
-        $this->total = $results[0]->total_count ?? 0;
+        // dd($this->getPaginatedRaw());
+        $results = collect(DB::select($this->getPaginatedRaw(), $bindings));
+        $this->total = $results->first()->total_count ?? 0;
 
         return $results;
     }
 
-    public function getPaginator(array $list): LengthAwarePaginator
+    public function getPaginator(Collection $list): LengthAwarePaginator
     {
         return new LengthAwarePaginator(
             $list,
@@ -109,4 +121,15 @@ class PaginatorSearchRawSQL
             ['path' => $this->request->url(), 'query' => $this->request->query()]
         );
     }
+    private function getComercioRaw(): string
+    {
+        $comercioRaw = "";
+
+        if (!empty($this->comercio)) {
+            $comercioRaw .= " and cm.id_categoria = :comercio ";
+        }
+
+        return $comercioRaw;
+    }
+
 }

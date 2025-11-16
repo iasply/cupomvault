@@ -1,5 +1,5 @@
 @php use Illuminate\Support\Carbon; @endphp
-@props(['cupom', 'acoes' => []])
+@props(['cupom', 'acoes' => [],'showStatus'=>true] )
 
 @php
     $now = Carbon::today();
@@ -26,9 +26,10 @@
             {{ $cupom->tit_cupom ?? 'Cupom sem título' }}
         </h2>
 
-        <span class="px-2 py-1 rounded text-xs font-medium {{ $status_class }}">
+        @if($showStatus) <span class="px-2 py-1 rounded text-xs font-medium {{ $status_class }}">
             {{ strtoupper($status) }}
         </span>
+        @endif
     </div>
 
     <div class="text-gray-600 text-sm space-y-1 mb-4">
