@@ -33,7 +33,7 @@
         @endif
 
 
-        <form action="{{ url('/cupomvault/comercio') }}" method="POST" class="space-y-5">
+        <form action="{{ route("comercio.save") }}" method="POST" class="space-y-5">
             @csrf
 
             <div>

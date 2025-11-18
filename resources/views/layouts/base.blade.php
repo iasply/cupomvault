@@ -20,7 +20,15 @@
 
 <body class="fade-in bg-gray-100 text-gray-900 flex h-screen overflow-hidden">
 
-<aside class="w-64 bg-gray-900 text-white flex flex-col fixed h-full shadow-xl">
+<!-- Botão hamburguer para mobile -->
+<button id="menu-btn" class="md:hidden fixed top-4 left-4 z-20 bg-gray-900 text-white p-2 rounded-lg focus:outline-none shadow-lg">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"/>
+    </svg>
+</button>
+
+<aside id="sidebar" class="w-64 bg-gray-900 text-white flex flex-col fixed h-full shadow-xl transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-10">
 
     <div class="p-6 border-b border-gray-800">
         <h2 class="text-xl font-semibold leading-tight">
@@ -33,7 +41,6 @@
     </div>
 
     <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
-
         @foreach($menu as $item)
             <a href="{{ route($item['route']) }}"
                class="
@@ -46,7 +53,6 @@
                 <span>{{ $item['label'] }}</span>
             </a>
         @endforeach
-
     </nav>
 
     <div class="p-5 border-t border-gray-800">
@@ -60,8 +66,10 @@
     </div>
 </aside>
 
-<main class="flex-1 ml-64 overflow-y-auto p-10">
+<!-- Overlay para mobile quando menu aberto -->
+<div id="overlay" class="hidden fixed inset-0 bg-black bg-opacity-30 z-5 md:hidden"></div>
 
+<main id="main-content" class="flex-1 ml-0 md:ml-64 overflow-y-auto p-10 transition-all duration-300">
     {{-- Alertas --}}
     @if(session('success'))
         <div class="bg-green-100 border border-green-300 text-green-800 px-4 py-3 rounded-lg mb-5 shadow-sm">
@@ -82,8 +90,30 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
+        // Fade-in
         const body = document.querySelector("body.fade-in");
         setTimeout(() => body.classList.add("loaded"), 50);
+
+        // Menu hamburguer
+        const btn = document.getElementById('menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        btn.addEventListener('click', () => {
+            const isOpen = sidebar.classList.contains('-translate-x-full');
+            if(isOpen){
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        });
+
+        overlay.addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+        });
     });
 </script>
 
