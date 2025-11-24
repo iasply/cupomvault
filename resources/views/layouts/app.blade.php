@@ -14,7 +14,6 @@
         CupomVault
     </h1>
 
-    <!-- Botão hamburguer visível apenas em telas pequenas -->
     <button id="menu-btn" class="md:hidden text-gray-700 focus:outline-none">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -22,11 +21,13 @@
         </svg>
     </button>
 
-    <!-- Menu principal -->
-    <nav id="menu" class="hidden md:flex gap-6 text-gray-700 font-medium flex-col md:flex-row absolute md:static top-full left-0 w-full md:w-auto bg-white md:bg-transparent shadow-md md:shadow-none p-4 md:p-0 z-10">
+    <nav id="menu"
+         class="hidden md:flex gap-6 text-gray-700 font-medium flex-col md:flex-row absolute md:static top-full left-0 w-full md:w-auto bg-white md:bg-transparent shadow-md md:shadow-none p-4 md:p-0 z-10">
         <a href="{{ route('cupomvault.home') }}" class="hover:text-gray-900 transition block md:inline-block">Início</a>
-        <a href="{{ route('comercio.login') }}" class="hover:text-gray-900 transition block md:inline-block">Comércios</a>
-        <a href="{{ route('associado.login') }}" class="hover:text-gray-900 transition block md:inline-block">Associados</a>
+        <a href="{{ route('comercio.login') }}"
+           class="hover:text-gray-900 transition block md:inline-block">Comércios</a>
+        <a href="{{ route('associado.login') }}"
+           class="hover:text-gray-900 transition block md:inline-block">Associados</a>
     </nav>
 </header>
 
@@ -44,6 +45,14 @@
         </div>
     @endif
 
+    @if($errors->any())
+        <div class="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded">
+            @foreach($errors->all() as $erro)
+                <p>{{ $erro }}</p>
+            @endforeach
+        </div>
+    @endif
+
     @yield('content')
 </main>
 
@@ -56,11 +65,10 @@
     const menu = document.getElementById('menu');
 
     btn.addEventListener('click', (e) => {
-        e.stopPropagation(); // evita que o clique se propague e feche imediatamente
+        e.stopPropagation();
         menu.classList.toggle('hidden');
     });
 
-    // Fechar menu ao clicar fora
     document.addEventListener('click', (e) => {
         if (!menu.contains(e.target) && !btn.contains(e.target)) {
             menu.classList.add('hidden');

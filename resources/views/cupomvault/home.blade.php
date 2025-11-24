@@ -22,6 +22,10 @@
                class="w-full py-3 text-center bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition">
                 Acessar como Associado
             </a>
+            <a href="{{ route('senha.form') }}"
+               class="w-full py-3 text-center text-blue-700 hover:text-blue-900 transition underline mt-3">
+                Esqueci minha senha
+            </a>
 
         </div>
     </x-container>

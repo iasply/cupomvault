@@ -3,6 +3,7 @@
 use App\Http\Controllers\AssociadoController;
 use App\Http\Controllers\ComercioController;
 use App\Http\Controllers\CupomController;
+use App\Http\Controllers\SenhaController;
 use App\Http\Middleware\CheckAssociado;
 use App\Http\Middleware\CheckComercio;
 use Illuminate\Support\Facades\Route;
@@ -10,6 +11,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', fn() => view('index'));
 
 Route::prefix('cupomvault')->group(function () {
+    Route::get('senha/esqueci', [SenhaController::class, 'form'])->name('senha.form');
+    Route::post('senha/enviar', [SenhaController::class, 'send'])->name('senha.send');
+    Route::get('senha/resetar/{token}', [SenhaController::class, 'resetForm'])->name('senha.reset.form');
+    Route::post('senha/resetar', [SenhaController::class, 'reset'])->name('senha.reset');
 
     Route::get('/home', fn() => view('cupomvault.home'))->name('cupomvault.home');
 
