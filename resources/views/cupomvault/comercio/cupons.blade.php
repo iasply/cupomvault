@@ -31,7 +31,8 @@
                     ['label' => 'Excluir', 'class' => 'bg-red-500 text-white hover:bg-red-600', 'onClick' => 'if(confirm(`Excluir este cupom?`)) window.location.href=`/cupom/delete/'.$cupom->id_promo.'`']
 //                    ,['label' => 'Desativar', 'class' => 'bg-gray-300 text-gray-800 hover:bg-gray-400'],
                 ]"
-                        :showStatus="false"
+                        :showStatus="false" 
+                        :modal="true"
                     />
                 @endforeach
             </div>

@@ -260,6 +260,37 @@ class CupomController extends Controller
 
         return back()->with('success', 'Cupom ativado com sucesso!');
     }
+    public function detalhes($id)
+    {
+        $sql = "
+        select
+            c.tit_cupom,
+            c.num_cupom,
+            c.per_desc_cupom,
+            to_char(c.dta_termino_cupom, 'DD/MM/YYYY') as validade,
+            c.id_promo,
+            ca.dta_uso_cupom_associado as data_uso,
+            case
+                when ca.num_cupom is not null then 'utilizado'
+                else 'não utilizado'
+            end as status,
+            sum(case when ca.num_cupom is not null then 1 else 0 end) over() as usados,
+            count(*) over() - sum(case when ca.num_cupom is not null then 1 else 0 end) over() as faltam
+        from cupons c
+        left join cupom_associado ca
+            on ca.num_cupom = c.num_cupom
+        where c.id_promo = :id_promo
+        order by ca.dta_uso_cupom_associado
+    ";
+
+        $cupons = DB::select($sql, ['id_promo' => $id]);
+
+        return response()->json($cupons);
+    }
+
+
+
+
 
 
 }

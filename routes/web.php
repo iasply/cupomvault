@@ -32,6 +32,7 @@ Route::prefix('cupomvault')->group(function () {
             Route::prefix('cupons')->group(function () {
                 Route::get('/listar', [CupomController::class, 'listarCuponsComercio'])->name('comercio.cupons');
                 Route::get('/usar', [CupomController::class, 'usar'])->name('comercio.usar');
+                Route::get('/detalhes/{id}', [CupomController::class, 'detalhes'])->name('comercio.detalhes');
                 Route::post('/usar', [CupomController::class, 'confirmarUso'])->name('comercio.usar');
                 Route::post('', [CupomController::class, 'create'])->name('cupom.create');
                 Route::post('/deletar', [CupomController::class, 'delete'])->name('cupom.delete');
