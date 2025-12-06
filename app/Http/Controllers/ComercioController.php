@@ -23,7 +23,7 @@ class ComercioController extends Controller
             'con_comercio' => 'required|string|max:15',
             'email_comercio' => 'required|email|max:50|unique:comercios,email_comercio',
             'sen_comercio' => 'required|string|min:6|max:64',
-            ]);
+        ]);
 
         $validated['sen_comercio'] = bcrypt($validated['sen_comercio']);
 

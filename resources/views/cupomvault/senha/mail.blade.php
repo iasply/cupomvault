@@ -10,7 +10,8 @@
     <tr>
         <td align="center" style="padding: 40px 0;">
 
-            <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff; border-radius:10px; padding:30px; border:1px solid #ddd;">
+            <table width="600" cellpadding="0" cellspacing="0"
+                   style="background:#ffffff; border-radius:10px; padding:30px; border:1px solid #ddd;">
 
                 <tr>
                     <td style="font-size:22px; font-weight:bold; color:#333;">

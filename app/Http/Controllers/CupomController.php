@@ -206,7 +206,7 @@ class CupomController extends Controller
 
         $bindings = ['cpf' => $cpf];
 
-        $paginatorRaw = new PaginatorSearchRawSQL($sqlBase," order by c.dta_termino_cupom desc ",$bindings, $request);
+        $paginatorRaw = new PaginatorSearchRawSQL($sqlBase, " order by c.dta_termino_cupom desc ", $bindings, $request);
 
         $rows = collect($paginatorRaw->execute())
             ->map(fn($r) => new CupomDTO($r));
@@ -260,6 +260,7 @@ class CupomController extends Controller
 
         return back()->with('success', 'Cupom ativado com sucesso!');
     }
+
     public function detalhes($id)
     {
         $sql = "
@@ -287,10 +288,6 @@ class CupomController extends Controller
 
         return response()->json($cupons);
     }
-
-
-
-
 
 
 }

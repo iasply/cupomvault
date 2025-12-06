@@ -43,16 +43,16 @@ class PaginatorSearchRawSQL
         $statusRaw = "";
         switch ($this->status) {
             case 'utilizado':
-                $statusRaw  .= " and ca.dta_uso_cupom_associado is not null ";
+                $statusRaw .= " and ca.dta_uso_cupom_associado is not null ";
                 break;
             case 'nao_utilizado':
-                $statusRaw  .= " and ca.dta_uso_cupom_associado is null ";
+                $statusRaw .= " and ca.dta_uso_cupom_associado is null ";
                 break;
             case 'vencido':
-                $statusRaw  .= " and c.dta_termino_cupom < current_date ";
+                $statusRaw .= " and c.dta_termino_cupom < current_date ";
                 break;
             case 'ativo':
-                $statusRaw  .= " and c.dta_inicio_cupom <= current_date and c.dta_termino_cupom >= current_date ";
+                $statusRaw .= " and c.dta_inicio_cupom <= current_date and c.dta_termino_cupom >= current_date ";
                 break;
         }
 
@@ -121,6 +121,7 @@ class PaginatorSearchRawSQL
             ['path' => $this->request->url(), 'query' => $this->request->query()]
         );
     }
+
     private function getComercioRaw(): string
     {
         $comercioRaw = "";

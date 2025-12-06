@@ -12,6 +12,7 @@
             opacity: 0;
             transition: opacity .35s ease-in-out;
         }
+
         body.fade-in.loaded {
             opacity: 1;
         }
@@ -30,7 +31,8 @@
     <span class="ml-3 font-semibold text-sm">Painel</span>
 </header>
 
-<aside id="sidebar" class="w-64 bg-gray-900 text-white flex flex-col fixed h-full shadow-xl transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-20 top-0 pt-14">
+<aside id="sidebar"
+       class="w-64 bg-gray-900 text-white flex flex-col fixed h-full shadow-xl transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-20 top-0 pt-14">
 
     <div class="p-6 border-b border-gray-800">
         <h2 class="text-xl font-semibold leading-tight">
@@ -99,7 +101,7 @@
 
         btn.addEventListener('click', () => {
             const isOpen = sidebar.classList.contains('-translate-x-full');
-            if(isOpen){
+            if (isOpen) {
                 sidebar.classList.remove('-translate-x-full');
                 overlay.classList.remove('hidden');
             } else {

@@ -3,19 +3,12 @@
 @section('title', 'Login do Comércio')
 
 @section('content')
-<x-container>
+    <x-container>
 
         <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">
             Login do Comércio
         </h2>
 
-        @if(session('error'))
-            <div class="alert error">{{ session('error') }}</div>
-        @endif
-
-        @if(session('success'))
-            <div class="alert success">{{ session('success') }}</div>
-        @endif
 
         <form method="POST" action="{{ route('comercio.autenticar') }}" class="space-y-5">
             @csrf
@@ -58,6 +51,6 @@
                 Cadastrar novo comércio
             </a>
         </p>
-</x-container>
+    </x-container>
 
 @endsection

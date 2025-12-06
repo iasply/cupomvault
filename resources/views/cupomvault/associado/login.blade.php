@@ -9,18 +9,10 @@
             Login do Associado
         </h2>
 
-        @if(session('error'))
-            <div class="alert error">{{ session('error') }}</div>
-        @endif
-
-        @if(session('success'))
-            <div class="alert success">{{ session('success') }}</div>
-        @endif
 
         <form method="POST" action="{{ route('associado.autenticar') }}" class="space-y-5">
             @csrf
 
-            {{-- E-mail --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">
                     E-mail
@@ -32,7 +24,6 @@
                 />
             </div>
 
-            {{-- Senha --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">
                     Senha
@@ -44,7 +35,6 @@
                 />
             </div>
 
-            {{-- Botão --}}
             <button
                 type="submit"
                 class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
@@ -60,6 +50,6 @@
         </p>
 
 
-        </x-container>
+    </x-container>
 
 @endsection

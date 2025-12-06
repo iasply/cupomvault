@@ -19,6 +19,7 @@ class CupomDTO
     public ?Carbon $dta_uso_cupom_associado;
     public ?int $per_desc_cupom;
     public ?int $id_promo;
+
     public function __construct(object $item)
     {
         $this->tit_cupom = $item->tit_cupom ?? '';
