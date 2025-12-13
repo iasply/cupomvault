@@ -35,8 +35,8 @@ Route::prefix('cupomvault')->group(function () {
                 Route::get('/detalhes/{id}', [CupomController::class, 'detalhes'])->name('comercio.detalhes');
                 Route::post('/usar', [CupomController::class, 'confirmarUso'])->name('comercio.usar');
                 Route::post('', [CupomController::class, 'create'])->name('cupom.create');
-                Route::post('/deletar', [CupomController::class, 'delete'])->name('cupom.delete');
-                Route::get('/ativar/{id}', [CupomController::class, 'ativar'])->name('cupom.ativar');
+                Route::post('/deletar/{id}', [CupomController::class, 'delete'])->name('cupom.delete');
+
             });
         });
     });

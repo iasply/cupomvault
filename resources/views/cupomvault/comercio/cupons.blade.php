@@ -27,14 +27,20 @@
                     <x-cupom-card
                         :cupom="$cupom"
                         :acoes="[
-                    ['label' => 'Editar', 'class' => 'bg-yellow-500 text-white hover:bg-yellow-600', 'onClick' => 'window.location.href=`/cupom/edit/'.$cupom->id_promo.'`'],
-                    ['label' => 'Excluir', 'class' => 'bg-red-500 text-white hover:bg-red-600', 'onClick' => 'if(confirm(`Excluir este cupom?`)) window.location.href=`/cupom/delete/'.$cupom->id_promo.'`']
-//                    ,['label' => 'Desativar', 'class' => 'bg-gray-300 text-gray-800 hover:bg-gray-400'],
-                ]"
+            [
+                'label' => 'Excluir',
+                'class' => 'bg-red-500 text-white hover:bg-red-600',
+                'onClick' => 'excluirCupom('
+                    . json_encode(route('cupom.delete', $cupom->id_promo)) . ', '
+                    . json_encode($cupom->tit_cupom)
+                . ')'
+            ]
+        ]"
                         :showStatus="false"
                         :modal="true"
                     />
                 @endforeach
+
             </div>
 
             @if(method_exists($cupons, 'links'))
@@ -99,5 +105,39 @@
         document.getElementById('closeModal').addEventListener('click', () => modal.classList.add('hidden'));
         overlay.addEventListener('click', () => modal.classList.add('hidden'));
     </script>
+    @if ($errors->any())
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                document.getElementById('modal').classList.remove('hidden');
+            });
+        </script>
+    @endif
+
+    <script>
+        function excluirCupom(url, titulo) {
+            if (!confirm(`Deseja mesmo excluir os cupons da promoção ${titulo}?`)) {
+                return;
+            }
+
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = url;
+
+            const csrf = document.createElement('input');
+            csrf.type = 'hidden';
+            csrf.name = '_token';
+            csrf.value = '{{ csrf_token() }}';
+
+            const method = document.createElement('input');
+            method.type = 'hidden';
+
+            form.appendChild(csrf);
+            form.appendChild(method);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
 
 @endsection
+
+

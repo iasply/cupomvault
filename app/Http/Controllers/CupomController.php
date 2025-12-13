@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-
+use Carbon\Carbon;
 class CupomController extends Controller
 {
     public function create(Request $request)
@@ -18,10 +18,20 @@ class CupomController extends Controller
         $request->validate([
             'quantidade' => 'required|integer|min:1|max:100',
             'per_desconto' => 'required|integer|min:1|max:100',
-            'dta_termino_cupom' => 'required|date|after_or_equal:today',
-            'dta_inicio_cupom' => 'required|date|after_or_equal:today',
+            'dta_inicio_cupom' => ['required', 'date', function ($attribute, $value, $fail) {
+                if (Carbon::parse($value)->startOfDay()->lt(Carbon::today())) {
+                    $fail('A data de início não pode ser anterior a hoje.');
+                }
+            }],
+            'dta_termino_cupom' => ['required', 'date', function ($attribute, $value, $fail) {
+                if (Carbon::parse($value)->startOfDay()->lt(Carbon::today())) {
+                    $fail('A data de término não pode ser anterior a hoje.');
+                }
+            }],
             'tit_cupom' => 'required|string|max:25',
         ]);
+
+
         $idPromo = DB::select("SELECT nextval('cupons_id_promo_seq') AS id")[0]->id;
         $cnpj = $request->session()->get('comercio')->cnpj_comercio;
 
@@ -289,5 +299,39 @@ class CupomController extends Controller
         return response()->json($cupons);
     }
 
+    public function delete($id)
+    {
+        $comercio = session('comercio');
+
+        if (!$comercio) {
+            return redirect()
+                ->route('comercio.cupons')
+                ->with('error', 'Nenhum comércio logado.');
+        }
+
+        $sqlVerifica = "
+        select 1
+          from cupons c
+          join cupom_associado ca
+            on ca.num_cupom = c.num_cupom
+         where c.id_promo = ?
+    ";
+
+        $existeUtilizado = !empty(DB::select($sqlVerifica, [$id]));
+
+        if ($existeUtilizado) {
+            return redirect()
+                ->route('comercio.cupons')
+                ->with('error', 'Não é possível excluir esta promoção porque já existem cupons utilizados.');
+        }
+
+        DB::table('cupons')
+            ->where('id_promo', $id)
+            ->delete();
+
+        return redirect()
+            ->route('comercio.cupons')
+            ->with('success', 'Promoção excluída com sucesso.');
+    }
 
 }
