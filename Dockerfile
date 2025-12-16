@@ -22,8 +22,6 @@ RUN rm -rf public/build
 
 RUN npx vite build
 
-RUN php artisan optimize:clear
-
 EXPOSE 9000
 
 CMD ["php-fpm"]
