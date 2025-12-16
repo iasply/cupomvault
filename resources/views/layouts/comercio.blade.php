@@ -1,7 +1,7 @@
 @php
     $comercio = session('comercio');
 
-    $usuarioNome = $comercio->nom_fantasia_comercio ?? 'Comércio';
+    $usuarioNome  = $comercio->nom_fantasia_comercio ?? 'Comércio';
     $usuarioEmail = $comercio->email_comercio ?? '';
 
     $logoutRoute = 'comercio.logout';
@@ -15,3 +15,7 @@
 @endphp
 
 @extends('layouts.base')
+
+@section('content')
+    @yield('content')
+@endsection
