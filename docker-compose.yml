@@ -20,7 +20,8 @@ services:
 
     networks:
       - laravel
-
+    volumes:
+      - ./public_shared:/var/www/html/public
 
   nginx:
     image: nginx:latest
@@ -29,7 +30,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - laravel_app_public:/var/www/html/public
+      - ./public_shared:/var/www/html/public:ro
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
       - ./nginx/certs:/etc/nginx/certs
     depends_on:
@@ -56,5 +57,4 @@ networks:
   laravel:
 
 volumes:
-  laravel_app_public:
   pgdata:
